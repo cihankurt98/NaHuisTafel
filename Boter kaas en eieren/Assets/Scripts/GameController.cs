@@ -10,6 +10,10 @@ public class GameController : MonoBehaviour
     public GameObject[] turnIcons; // Holding the arrow turn icons for both players
     public Sprite[] playerIcons; // 0 = player X icon and 1 = player O icon
     public Button[] tictactoeSpaces; // playable spaces for the game
+    public int[] markedSpaces; // Identifies which space was marked by which player
+    public Text winnerText; // Holds the text for the winner
+    public GameObject[] winningLines; // Holds the lines for every possible solution
+    public GameObject winnerPanel;
     void Start()
     {
         GameSetup();
@@ -31,14 +35,63 @@ public class GameController : MonoBehaviour
             tictactoeSpaces[i].interactable = true;
             tictactoeSpaces[i].GetComponent<Image>().sprite = null;
         }
+        for(int i = 0; i < markedSpaces.Length; i++)
+        {
+            markedSpaces[i] = -100; // Can't initialize with 0, because 0 stands for player X. -1 Will cause logic errors.
+        }
     }
-    
+
+    void CheckWinner()
+    {
+        int s1 = markedSpaces[0] + markedSpaces[1] + markedSpaces[2]; // Horizontal 1
+        int s2 = markedSpaces[3] + markedSpaces[4] + markedSpaces[5]; // Horizontal 2
+        int s3 = markedSpaces[6] + markedSpaces[7] + markedSpaces[8]; // Horizontal 3
+        int s4 = markedSpaces[0] + markedSpaces[3] + markedSpaces[6]; // Vertical 1
+        int s5 = markedSpaces[1] + markedSpaces[4] + markedSpaces[7]; // Vertical 2
+        int s6 = markedSpaces[2] + markedSpaces[5] + markedSpaces[8]; // Vertical 3
+        int s7 = markedSpaces[0] + markedSpaces[4] + markedSpaces[8]; // Diagonal 1
+        int s8 = markedSpaces[0] + markedSpaces[4] + markedSpaces[6]; // Diagonal 2
+
+        var solutions = new int[] { s1, s2, s3, s4, s5, s6, s7, s8 };
+
+        for (int i = 0; i < solutions.Length; i++)
+        {
+            if (solutions[i] == 3 * (playerTurn + 1))
+            {
+                DisplayWinner(i);
+                return;
+            }
+        }
+    }
+
+    void DisplayWinner(int indexIn)
+    {
+        winnerPanel.gameObject.SetActive(true);
+        if (playerTurn == 0)
+        {
+            winnerText.text = "Speler X heeft gewonnen!";
+        }
+        else if (playerTurn == 1)
+        {
+            winnerText.text = "Speler O heeft gewonnen!";
+        }
+
+        winningLines[indexIn].SetActive(true);
+    }
+
     public void TicTacToeButton(int whichButton)
     {
         tictactoeSpaces[whichButton].image.sprite = playerIcons[playerTurn]; // Change empty sprite to X or O
         tictactoeSpaces[whichButton].interactable = false; // Button can not be used after pressed
 
-       // playerTurn = playerTurn == 0 ? 1 : 0; // Change turn depending on who's turn it actually is.
+        markedSpaces[whichButton] = playerTurn + 1; // Mark the button with the value of the corresponding player. Need to do +1 because of possible logic errors
+        turnCounter++;
+        if (turnCounter > 4) // Winning is only possible after 4 turns, so there is no need to check before.
+        {
+            CheckWinner();
+        }
+
+        // playerTurn = playerTurn == 0 ? 1 : 0; // Change turn depending on who's turn it actually is.
 
         if (playerTurn == 0)
         {
