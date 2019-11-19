@@ -14,6 +14,10 @@ public class GameController : MonoBehaviour
     public Text winnerText; // Holds the text for the winner
     public GameObject[] winningLines; // Holds the lines for every possible solution
     public GameObject winnerPanel;
+    public int xPlayerScore;
+    public int oPlayerScore;
+    public Text xPlayerScoreText;
+    public Text oPlayerScoreText;
     void Start()
     {
         GameSetup();
@@ -69,10 +73,14 @@ public class GameController : MonoBehaviour
         winnerPanel.gameObject.SetActive(true);
         if (playerTurn == 0)
         {
+            xPlayerScore++;
+            xPlayerScoreText.text = xPlayerScore.ToString();
             winnerText.text = "Speler X heeft gewonnen!";
         }
         else if (playerTurn == 1)
         {
+            oPlayerScore++;
+            oPlayerScoreText.text = oPlayerScore.ToString();
             winnerText.text = "Speler O heeft gewonnen!";
         }
 
