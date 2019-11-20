@@ -18,6 +18,7 @@ public class GameController : MonoBehaviour
     public int oPlayerScore;
     public Text xPlayerScoreText;
     public Text oPlayerScoreText;
+    public Button rematchButton;
     void Start()
     {
         GameSetup();
@@ -30,6 +31,7 @@ public class GameController : MonoBehaviour
 
     void GameSetup()
     {
+        rematchButton.interactable = false;
         playerTurn = 0; // Player X always starts.
         turnCounter = 0;
         turnIcons[0].SetActive(true);
@@ -54,7 +56,7 @@ public class GameController : MonoBehaviour
         int s5 = markedSpaces[1] + markedSpaces[4] + markedSpaces[7]; // Vertical 2
         int s6 = markedSpaces[2] + markedSpaces[5] + markedSpaces[8]; // Vertical 3
         int s7 = markedSpaces[0] + markedSpaces[4] + markedSpaces[8]; // Diagonal 1
-        int s8 = markedSpaces[0] + markedSpaces[4] + markedSpaces[6]; // Diagonal 2
+        int s8 = markedSpaces[6] + markedSpaces[4] + markedSpaces[2]; // Diagonal 2
 
         var solutions = new int[] { s1, s2, s3, s4, s5, s6, s7, s8 };
 
@@ -85,6 +87,7 @@ public class GameController : MonoBehaviour
         }
 
         winningLines[indexIn].SetActive(true);
+        rematchButton.interactable = true;
     }
 
     public void TicTacToeButton(int whichButton)
@@ -113,5 +116,10 @@ public class GameController : MonoBehaviour
             turnIcons[0].SetActive(true);
             turnIcons[1].SetActive(false);
         }
+    }
+    
+    public void Rematch()
+    {
+        GameSetup();
     }
 }
