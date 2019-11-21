@@ -19,6 +19,7 @@ public class GameController : MonoBehaviour
     public Text xPlayerScoreText;
     public Text oPlayerScoreText;
     public Button rematchButton;
+    public Button restartButton;
     void Start()
     {
         GameSetup();
@@ -31,7 +32,9 @@ public class GameController : MonoBehaviour
 
     void GameSetup()
     {
+        
         rematchButton.interactable = false;
+        restartButton.interactable = false;
         playerTurn = 0; // Player X always starts.
         turnCounter = 0;
         turnIcons[0].SetActive(true);
@@ -47,7 +50,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void CheckWinner()
+    bool CheckWinner()
     {
         int s1 = markedSpaces[0] + markedSpaces[1] + markedSpaces[2]; // Horizontal 1
         int s2 = markedSpaces[3] + markedSpaces[4] + markedSpaces[5]; // Horizontal 2
@@ -65,9 +68,10 @@ public class GameController : MonoBehaviour
             if (solutions[i] == 3 * (playerTurn + 1))
             {
                 DisplayWinner(i);
-                return;
+                return true;
             }
         }
+        return false;
     }
 
     void DisplayWinner(int indexIn)
@@ -87,7 +91,20 @@ public class GameController : MonoBehaviour
         }
 
         winningLines[indexIn].SetActive(true);
+        makeButtonsActive();
+    }
+    
+    void Draw()
+    {
+        winnerPanel.SetActive(true);
+        winnerText.text = "Het is een gelijkspel!";
+        makeButtonsActive();
+    }
+
+    void makeButtonsActive()
+    {
         rematchButton.interactable = true;
+        restartButton.interactable = true;
     }
 
     public void TicTacToeButton(int whichButton)
@@ -99,7 +116,11 @@ public class GameController : MonoBehaviour
         turnCounter++;
         if (turnCounter > 4) // Winning is only possible after 4 turns, so there is no need to check before.
         {
-            CheckWinner();
+            bool isWinner = CheckWinner();
+            if (turnCounter == 9 && isWinner == false) // If 9 spaces are filled without having a winner, it will be a draw.
+            {
+                Draw();
+            }
         }
 
         // playerTurn = playerTurn == 0 ? 1 : 0; // Change turn depending on who's turn it actually is.
@@ -121,5 +142,20 @@ public class GameController : MonoBehaviour
     public void Rematch()
     {
         GameSetup();
+        for (int i = 0; i < winningLines.Length; i++)
+        {
+            winningLines[i].SetActive(false);
+        }
+        winnerPanel.SetActive(false);
     }
+
+    public void Restart()
+    {
+        Rematch();
+        xPlayerScore = 0;
+        oPlayerScore = 0;
+        xPlayerScoreText.text = xPlayerScore.ToString();
+        oPlayerScoreText.text = oPlayerScore.ToString();
+    }
+
 }
