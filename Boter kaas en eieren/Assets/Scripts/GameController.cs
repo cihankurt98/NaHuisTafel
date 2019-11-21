@@ -7,19 +7,25 @@ public class GameController : MonoBehaviour
 {
     public int playerTurn; // 0 = player X and 1 = player O
     public int turnCounter; // counts the number of played turns
-    public GameObject[] turnIcons; // Holding the arrow turn icons for both players
-    public Sprite[] playerIcons; // 0 = player X icon and 1 = player O icon
-    public Button[] tictactoeSpaces; // playable spaces for the game
-    public int[] markedSpaces; // Identifies which space was marked by which player
-    public Text winnerText; // Holds the text for the winner
-    public GameObject[] winningLines; // Holds the lines for every possible solution
-    public GameObject winnerPanel;
     public int xPlayerScore;
     public int oPlayerScore;
-    public Text xPlayerScoreText;
-    public Text oPlayerScoreText;
+    public int[] markedSpaces; // Identifies which space was marked by which player
+
+    public GameObject[] turnIcons; // Holding the arrow turn icons for both players
+    public GameObject[] winningLines; // Holds the lines for every possible solution
+    public GameObject winnerPanel;
+
+    public Button[] tictactoeSpaces; // playable spaces for the game
     public Button rematchButton;
     public Button restartButton;
+
+    public Text winnerText; // Holds the text for the winner
+    public Text xPlayerScoreText;
+    public Text oPlayerScoreText;
+
+    public AudioSource buttonClickAudio;
+    public Sprite[] playerIcons; // 0 = player X icon and 1 = player O icon
+
     void Start()
     {
         GameSetup();
@@ -156,6 +162,11 @@ public class GameController : MonoBehaviour
         oPlayerScore = 0;
         xPlayerScoreText.text = xPlayerScore.ToString();
         oPlayerScoreText.text = oPlayerScore.ToString();
+    }
+
+    public void PlayButtonClickAudio()
+    {
+        buttonClickAudio.Play();
     }
 
 }
