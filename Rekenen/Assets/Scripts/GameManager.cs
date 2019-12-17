@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour
     public Text questionText;
     public Text answerAText;
     public Text answerBText;
+    public int wrongAnswersCount;
+    public int correctAnswersCount;
 
     [SerializeField]
     private int a;
@@ -68,7 +70,7 @@ public class GameManager : MonoBehaviour
                 correctAnswer = a + b;
                 break;
             case 1: // -
-                correctAnswer = (a >= b) ? (a - b) : (a - b);
+                correctAnswer = (a >= b) ? (a - b) : (b - a);
                 break;
             case 2: // *
                 correctAnswer = a * b;
@@ -84,7 +86,7 @@ public class GameManager : MonoBehaviour
         wrongAnswer = Random.Range(correctAnswer - 10, correctAnswer + 10);
     }
 
-    public void UpdateUI(string question, string correctAnswer, string wrongAnswer)
+    private void UpdateUI(string question, string correctAnswer, string wrongAnswer)
     {
         // Display question
         questionText.text = question;
@@ -101,8 +103,22 @@ public class GameManager : MonoBehaviour
             answerAText.text = correctAnswer;
             answerBText.text = wrongAnswer;
         }
+    }
 
+    public void NextQuestion(Text pressedButtonText)
+    {
+        int givenAnswer;
+        int.TryParse(pressedButtonText.text, out givenAnswer);
 
+        if (givenAnswer == correctAnswer)
+        {
+            correctAnswersCount++;
+        }
+        else
+        {
+            wrongAnswersCount++;
+        }
+        MakeQuestion();
     }
 
 }
