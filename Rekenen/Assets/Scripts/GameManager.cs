@@ -46,8 +46,6 @@ public class GameManager : MonoBehaviour
         calculateCorrectAnswer();
         calculateWrongAnswer();
 
-        string question; // Default construction = " " ;
-
         if (a >= b)
         {
             question = a.ToString() + methodDictionary[methodCase] + b.ToString();
@@ -57,7 +55,7 @@ public class GameManager : MonoBehaviour
             question = b.ToString() + methodDictionary[methodCase] + a.ToString();
         }
 
-        UpdateUI(question, correctAnswer.ToString(), wrongAnswer.ToString());
+        UpdateUI();
 
         methodCase = (methodCase == 3) ? (0) : (methodCase + 1);
     }
@@ -86,7 +84,7 @@ public class GameManager : MonoBehaviour
         wrongAnswer = Random.Range(correctAnswer - 10, correctAnswer + 10);
     }
 
-    private void UpdateUI(string question, string correctAnswer, string wrongAnswer)
+    private void UpdateUI()
     {
         // Display question
         questionText.text = question;
@@ -95,13 +93,13 @@ public class GameManager : MonoBehaviour
         // Randomly assign the correct and wronganswers to the button texts.
         if (Random.Range(0, 1) == 0)
         {
-            answerAText.text = correctAnswer;
-            answerBText.text = wrongAnswer;
+            answerAText.text = correctAnswer.ToString();
+            answerBText.text = wrongAnswer.ToString();
         }
         else
         {
-            answerAText.text = correctAnswer;
-            answerBText.text = wrongAnswer;
+            answerAText.text = correctAnswer.ToString();
+            answerBText.text = wrongAnswer.ToString();
         }
     }
 
@@ -112,10 +110,12 @@ public class GameManager : MonoBehaviour
 
         if (givenAnswer == correctAnswer)
         {
+            // Play sound
             correctAnswersCount++;
         }
         else
         {
+            // Play sound
             wrongAnswersCount++;
         }
         MakeQuestion();
