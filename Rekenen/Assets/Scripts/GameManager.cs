@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,117 +9,103 @@ public class GameManager : MonoBehaviour
     public Text questionText;
     public Text answerAText;
     public Text answerBText;
-    public int wrongAnswersCount;
-    public int correctAnswersCount;
 
+    public TextAsset textFile;
+
+    // Debugging
     [SerializeField]
-    private int a;
+    private string lineFromFile;
     [SerializeField]
-    private int b;
+    private List<string> linesFromFile;
     [SerializeField]
-    private int correctAnswer;
+    private int answer;
     [SerializeField]
     private int wrongAnswer;
     [SerializeField]
-    private int methodCase;
+    private int correctAnswersCount;
     [SerializeField]
-    private string question;
-    private Dictionary<int, string> methodDictionary;
+    private int wrongAnswersCount;
 
-    public void Start()
+    void Start()
     {
-        correctAnswer = 0;
-        wrongAnswer = 0;
-        methodCase = 0;
-        methodDictionary = new Dictionary<int, string>();
-        methodDictionary.Add(0, " + ");
-        methodDictionary.Add(1, " - ");
-        methodDictionary.Add(2, " * ");
-        methodDictionary.Add(3, " / ");
-
-        MakeQuestion();
+        linesFromFile = new List<string>();
+        ConvertFile();
+        NextQuestion();
     }
-    private void MakeQuestion()
+
+    private void ConvertFile()
     {
-        a = Random.Range(1, 100);
-        b = Random.Range(1, 100);
-
-        calculateCorrectAnswer();
-        calculateWrongAnswer();
-
-        string question; // Default construction = " " ;
-
-        if (a >= b)
+        string[] tempLinesFromFile = textFile.text.Split('\n'); // Needed because List and Split are not compatible
+        foreach (string i in tempLinesFromFile)
         {
-            question = a.ToString() + methodDictionary[methodCase] + b.ToString();
+            linesFromFile.Add(i);
+        }
+    }
+
+    private void TakeRandomLine()
+    {
+        if (linesFromFile.Count == 0  && EditorUtility.DisplayDialog("Uitgespeeld" ,"Gefeliciteerd! Op dit niveau zijn er geen vragen meer over.","Terug naar het hoofdmenu"))
+        {
+          
+        }
+
+        // Generate a random integer within the range of the list. Search for that index within the list. 
+        // Take that string and remove it afterwards to avoid getting the same one over and over again.
+        int lineNumber = Random.Range(0, (linesFromFile.Count - 1));
+        lineFromFile = linesFromFile[lineNumber];
+        linesFromFile.Remove(lineFromFile);
+    }
+
+    private void GetCorrectAnswer()
+    {
+       ExpressionEvaluator.Evaluate(lineFromFile, out answer);
+        if (answer == 0) throw new System.Exception("Het berekenen van het antwoord is mislukt."); // If the file is correct, this won't happen.
+    }
+
+    private void GetWrongAnswer()
+    {
+        wrongAnswer = answer + (Random.Range(-10, 11)); // Min = inclusive Max = exclusive
+    }
+
+    private void DisplayQuestion()
+    {
+        questionText.text = lineFromFile;
+        if (Random.Range(0, 2) == 0)
+        {
+            answerAText.text = answer.ToString();
+            answerBText.text = wrongAnswer.ToString();
         }
         else
         {
-            question = b.ToString() + methodDictionary[methodCase] + a.ToString();
+            answerBText.text = answer.ToString();
+            answerAText.text = wrongAnswer.ToString();
         }
-
-        UpdateUI(question, correctAnswer.ToString(), wrongAnswer.ToString());
-
-        methodCase = (methodCase == 3) ? (0) : (methodCase + 1);
     }
-
-    private void calculateCorrectAnswer()
+    private void NextQuestion()
     {
-        switch (methodCase)
-        {
-            case 0: // +
-                correctAnswer = a + b;
-                break;
-            case 1: // -
-                correctAnswer = (a >= b) ? (a - b) : (b - a);
-                break;
-            case 2: // *
-                correctAnswer = a * b;
-                break;
-            case 3: // :
-                correctAnswer = (a >= b) ? (a / b) : (b / a);
-                break;
-        }
+        TakeRandomLine();
+        GetCorrectAnswer();
+        GetWrongAnswer();
+        DisplayQuestion();
     }
 
-    private void calculateWrongAnswer()
-    {
-        wrongAnswer = Random.Range(correctAnswer - 10, correctAnswer + 10);
-    }
-
-    private void UpdateUI(string question, string correctAnswer, string wrongAnswer)
-    {
-        // Display question
-        questionText.text = question;
-
-
-        // Randomly assign the correct and wronganswers to the button texts.
-        if (Random.Range(0, 1) == 0)
-        {
-            answerAText.text = correctAnswer;
-            answerBText.text = wrongAnswer;
-        }
-        else
-        {
-            answerAText.text = correctAnswer;
-            answerBText.text = wrongAnswer;
-        }
-    }
-
-    public void NextQuestion(Text pressedButtonText)
+    public void answerGiven(Text givenAnswerText)
     {
         int givenAnswer;
-        int.TryParse(pressedButtonText.text, out givenAnswer);
+        int.TryParse(givenAnswerText.text, out givenAnswer);
 
-        if (givenAnswer == correctAnswer)
+        if (givenAnswer == answer)
         {
+            // Play sound
             correctAnswersCount++;
         }
         else
         {
+            // Play sound
             wrongAnswersCount++;
         }
-        MakeQuestion();
+        NextQuestion();
     }
+
 
 }
