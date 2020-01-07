@@ -58,10 +58,13 @@ public class GameManager : MonoBehaviour
 
     private void GetCorrectAnswer()
     {
-       ExpressionEvaluator.Evaluate(lineFromFile, out answer);
-        if (answer == 0) throw new System.Exception("Het berekenen van het antwoord is mislukt."); // If the file is correct, this won't happen.
+        ExpressionEvaluator.Evaluate<int>(lineFromFile, out answer);
+        if (answer == 0)
+        {
+            Debug.Log("fail " + lineFromFile);
+            //GetCorrectAnswer(); // Try to calculate again, since the file should not contain any mistakes. ExpressionEvaluator is sometimes returning an error without a reason.
+        }
     }
-
     private void GetWrongAnswer()
     {
         wrongAnswer = answer + (Random.Range(-10, 11)); // Min = inclusive Max = exclusive
