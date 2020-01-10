@@ -9,8 +9,12 @@ public class GameManager : MonoBehaviour
     public Text questionText;
     public Text answerAText;
     public Text answerBText;
+    public Text correctScoreText;
+    public Text incorrectScoreText;
 
     public TextAsset textFile;
+
+    public AudioClip correctSoundEffect;
 
     // Debugging
     [SerializeField]
@@ -24,7 +28,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private int correctAnswersCount;
     [SerializeField]
-    private int wrongAnswersCount;
+    private int incorrectAnswersCount;
 
     void Start()
     {
@@ -44,9 +48,9 @@ public class GameManager : MonoBehaviour
 
     private void TakeRandomLine()
     {
-        if (linesFromFile.Count == 0  && EditorUtility.DisplayDialog("Uitgespeeld" ,"Gefeliciteerd! Op dit niveau zijn er geen vragen meer over.","Terug naar het hoofdmenu"))
+        if (linesFromFile.Count == 0 && EditorUtility.DisplayDialog("Uitgespeeld", "Gefeliciteerd! Op dit niveau zijn er geen vragen meer over.", "Terug naar het hoofdmenu"))
         {
-          
+
         }
 
         // Generate a random integer within the range of the list. Search for that index within the list. 
@@ -96,19 +100,21 @@ public class GameManager : MonoBehaviour
     {
         int givenAnswer;
         int.TryParse(givenAnswerText.text, out givenAnswer);
+        AudioSource audsrc = GetComponent<AudioSource>();
 
         if (givenAnswer == answer)
         {
-            // Play sound
+            audsrc.clip = correctSoundEffect;
+            audsrc.Play();
             correctAnswersCount++;
+            correctScoreText.text = correctAnswersCount.ToString();
         }
         else
         {
             // Play sound
-            wrongAnswersCount++;
+            incorrectAnswersCount++;
+            incorrectScoreText.text = incorrectAnswersCount.ToString();
         }
         NextQuestion();
     }
-
-
 }
