@@ -14,7 +14,11 @@ public class GameManager : MonoBehaviour
 
     public TextAsset textFile;
 
+    public Image soundImage;
+    public Sprite soundOn;
+    public Sprite soundOff;
     public AudioClip correctSoundEffect;
+    public AudioClip incorrectSoundEffect;
 
     // Debugging
     [SerializeField]
@@ -105,16 +109,33 @@ public class GameManager : MonoBehaviour
         if (givenAnswer == answer)
         {
             audsrc.clip = correctSoundEffect;
-            audsrc.Play();
             correctAnswersCount++;
             correctScoreText.text = correctAnswersCount.ToString();
         }
         else
         {
-            // Play sound
+            audsrc.clip = incorrectSoundEffect;
             incorrectAnswersCount++;
             incorrectScoreText.text = incorrectAnswersCount.ToString();
         }
+        audsrc.Play();
         NextQuestion();
+    }
+
+    public void changeVolume(float value)
+    {
+        AudioSource audsrc = GetComponent<AudioSource>();
+        audsrc.volume = value;
+
+        // change sprite
+        if (value == 0.0)
+        {
+            soundImage.sprite = soundOff;
+        }
+        else if (value >= 0.0 && soundImage.sprite == soundOff) // Makes sure that it only changes when going from 0.0 to something higher. Preventing extra workload.
+        {
+            soundImage.sprite = soundOn;
+        }
+        
     }
 }
