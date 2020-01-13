@@ -12,7 +12,9 @@ public class GameManager : MonoBehaviour
     public Text correctScoreText;
     public Text incorrectScoreText;
 
-    public TextAsset textFile;
+    public TextAsset easyFile;
+    public TextAsset normalFile;
+    public TextAsset hardFile;
 
     public Image soundImage;
     public Sprite soundOn;
@@ -20,25 +22,45 @@ public class GameManager : MonoBehaviour
     public AudioClip correctSoundEffect;
     public AudioClip incorrectSoundEffect;
 
-    // Debugging
-    [SerializeField]
+    public GameObject menuCanvas;
+    public GameObject gameCanvas;
+
+    // If you want to debug, remove the "//" next to each [SerializeField]
+    //[SerializeField]
     private string lineFromFile;
-    [SerializeField]
+    //[SerializeField]
     private List<string> linesFromFile;
-    [SerializeField]
+    //[SerializeField]
     private int answer;
-    [SerializeField]
+    //[SerializeField]
     private int wrongAnswer;
-    [SerializeField]
+    //[SerializeField]
     private int correctAnswersCount;
-    [SerializeField]
+    //[SerializeField]
     private int incorrectAnswersCount;
+    //[SerializeField]
+    private TextAsset textFile;
+
 
     void Start()
     {
+        gameCanvas.SetActive(false); // leave MenuCanvas active
         linesFromFile = new List<string>();
+    }
+
+    private void InitGame()
+    {
+        ResetScore();
         ConvertFile();
         NextQuestion();
+    }
+
+    private void ResetScore()
+    {
+        correctAnswersCount = 0;
+        incorrectAnswersCount = 0;
+        correctScoreText.text = correctAnswersCount.ToString();
+        incorrectScoreText.text = incorrectAnswersCount.ToString();
     }
 
     private void ConvertFile()
@@ -54,7 +76,8 @@ public class GameManager : MonoBehaviour
     {
         if (linesFromFile.Count == 0 && EditorUtility.DisplayDialog("Uitgespeeld", "Gefeliciteerd! Op dit niveau zijn er geen vragen meer over.", "Terug naar het hoofdmenu"))
         {
-
+            gameCanvas.SetActive(false);
+            menuCanvas.SetActive(true);
         }
 
         // Generate a random integer within the range of the list. Search for that index within the list. 
@@ -69,13 +92,17 @@ public class GameManager : MonoBehaviour
         ExpressionEvaluator.Evaluate<int>(lineFromFile, out answer);
         if (answer == 0)
         {
-            Debug.Log("fail " + lineFromFile);
-            //GetCorrectAnswer(); // Try to calculate again, since the file should not contain any mistakes. ExpressionEvaluator is sometimes returning an error without a reason.
+            Debug.Log("Calculation Error" + lineFromFile);
         }
     }
     private void GetWrongAnswer()
     {
-        wrongAnswer = answer + (Random.Range(-10, 11)); // Min = inclusive Max = exclusive
+        // loop to prevent wronganswer being equal to answer (answer + randomresult 0)
+        wrongAnswer = answer;
+        while (wrongAnswer == answer)
+        {
+            wrongAnswer = answer + (Random.Range(-10, 11)); // Min = inclusive Max = exclusive
+        }
     }
 
     private void DisplayQuestion()
@@ -137,5 +164,28 @@ public class GameManager : MonoBehaviour
             soundImage.sprite = soundOn;
         }
         
+    }
+
+    public void changeDifficulty(int mode)
+    {
+        switch(mode)
+        {
+            case 0:
+                textFile = easyFile;
+                break;
+            case 1:
+                textFile = normalFile;
+                break;
+            case 2:
+                textFile = hardFile;
+                break;
+        }
+
+        // Deactivate menu and activate game
+        menuCanvas.SetActive(false);
+        gameCanvas.SetActive(true);
+
+        InitGame();
+
     }
 }
