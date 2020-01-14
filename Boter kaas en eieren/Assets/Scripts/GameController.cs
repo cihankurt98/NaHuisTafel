@@ -18,6 +18,7 @@ public class GameController : MonoBehaviour
     public Button[] tictactoeSpaces; // playable spaces for the game
     public Button rematchButton;
     public Button restartButton;
+    public Button muteButton;
 
     public Text winnerText; // Holds the text for the winner
     public Text xPlayerScoreText;
@@ -26,8 +27,12 @@ public class GameController : MonoBehaviour
     public AudioSource buttonClickAudio;
     public Sprite[] playerIcons; // 0 = player X icon and 1 = player O icon
 
+    public Sprite unmuteImage;
+    public Sprite muteImage;
+
     void Start()
     {
+        Screen.fullScreen = false; // Preventing the build to always be fullscreen mode (bug in Unity)
         GameSetup();
     }
 
@@ -167,6 +172,21 @@ public class GameController : MonoBehaviour
     public void PlayButtonClickAudio()
     {
         buttonClickAudio.Play();
+    }
+
+    public void MuteButtonClick()
+    {
+       if (muteButton.image.sprite == muteImage)
+        {
+            muteButton.image.sprite = unmuteImage;
+            buttonClickAudio.mute = false;
+
+        }
+        else
+        {
+            muteButton.image.sprite = muteImage;
+            buttonClickAudio.mute = true;
+        }
     }
 
 }
